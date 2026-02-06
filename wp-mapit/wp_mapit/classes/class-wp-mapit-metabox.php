@@ -25,6 +25,24 @@ if ( ! class_exists( 'Wp_Mapit_Metabox' ) ) {
 		 * @access public
 		 */
 		public static function init() {
+			/* Create metaboxes */
+			add_action(
+				'init',
+				array(
+					__CLASS__,
+					'init_hook',
+				)
+			);
+		}
+
+		/**
+		 * Handle init hook for the metaboxes
+		 *
+		 * @since 1.0
+		 * @static
+		 * @access public
+		 */
+		public static function init_hook() {
 			$arr_allowed_post_types = wp_mapit_admin_settings::get_allowed_posttypes();
 
 			$arr_map_types = array();

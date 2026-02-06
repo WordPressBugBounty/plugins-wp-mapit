@@ -3,7 +3,7 @@
  * Plugin Name: WP MapIt
  * Plugin URI: http://wp-mapit.chandnipatel.in
  * Description: WP MapIt is a WordPress plugin to display Open street maps using leaflet on your WordPress site
- * Version: 3.0.2
+ * Version: 3.0.3
  * Author: Chandni Patel
  * Author URI: http://chandnipatel.in/
  * Developer: Chandni Patel
@@ -43,10 +43,6 @@ if ( ! function_exists( 'wp_mapit_init' ) ) {
 	 * @return class object
 	 */
 	function wp_mapit_init() {
-
-		/* Loading the textdomain */
-		load_plugin_textdomain( 'wp-mapit', false, basename( dirname( __DIR__ ) ) . '/wp_mapit/languages' );
-
 		/* Initialize the base class of the plugin */
 		return Wp_Mapit::instance();
 	}
@@ -56,3 +52,12 @@ if ( ! function_exists( 'wp_mapit_init' ) ) {
  * Create the main object of the plugin when the plugins are loaded
  */
 add_action( 'plugins_loaded', 'wp_mapit_init' );
+
+add_action(
+	'init',
+	function () {
+		/* Loading the textdomain */
+		load_plugin_textdomain( 'wp-mapit', false, WP_MAPIT_DIR . 'languages' );
+	},
+	99
+);
