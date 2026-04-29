@@ -5,6 +5,11 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
+use WpMapit\Classes\Wp_Mapit_Multipin_Map;
+use WpMapit\Classes\Wp_Mapit_Map;
+
 /**
  * Exit if accessed directly
  */
@@ -26,10 +31,22 @@ if ( ! class_exists( 'Wp_Mapit_Shortcode' ) ) {
 		 */
 		public static function init() {
 			/* Shortcode to display current page map */
-			add_shortcode( 'wp_mapit', __CLASS__ . '::wp_mapit' );
+			add_shortcode(
+				'wp_mapit',
+				array(
+					__CLASS__,
+					'wp_mapit',
+				),
+			);
 
 			/* Shortcode to display map from map module (multipin map) */
-			add_shortcode( 'wp_mapit_map', __CLASS__ . '::wp_mapit_map' );
+			add_shortcode(
+				'wp_mapit_map',
+				array(
+					__CLASS__,
+					'wp_mapit_map',
+				),
+			);
 		}
 
 		/**
@@ -60,15 +77,10 @@ if ( ! class_exists( 'Wp_Mapit_Shortcode' ) ) {
 			$map_id = isset( $atts['id'] ) ? intval( $atts['id'] ) : 0;
 
 			if ( $map_id > 0 ) {
-				if ( wp_mapit_multipin_map::has_map( $map_id ) ) {
-					return wp_mapit_multipin_map::generate_map( $map_id );
+				if ( Wp_Mapit_Multipin_Map::has_map( $map_id ) ) {
+					return Wp_Mapit_Multipin_Map::generate_map( $map_id );
 				}
 			}
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_Shortcode::init();
 }

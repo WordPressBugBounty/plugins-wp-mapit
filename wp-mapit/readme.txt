@@ -1,12 +1,12 @@
 === WP MapIt ===
 Contributors: chandnipatel, nirikshapatel05
 Donate link: https://www.paypal.me/chandnipatel11
-Tags: wp mapit, maps, map, map marker, map pin, wordpress maps, open street maps, leaflet, free map, map plugin, wp map, no api, map widget, map shortcode, map gutenberg, open source map, osm, open street map, mapit
+Tags: wp mapit, open street map, leaflet, open source map, map pin
 Requires at least: 4.2
 License: GPL3
-Tested up to: 6.7.1
+Tested up to: 6.9
 Requires PHP: 5.4
-Stable tag: trunk
+Stable tag: 3.1.0
 
 Easy to use, WordPress Map plugin based on Open Street Map and Leaflet with custom markers images, descriptions and links.
 
@@ -157,6 +157,9 @@ It works in IE Edge, it is not supported in the versions below it.
 = 3.0.3 :- 2025-11-03 :- High priority =
 * Bug fixes
 
+= 3.1.0 :- 2026-04-29 :- High priority =
+* Bug fixes
+
 == Upgrade Notice ==
 = 1.1 =
 Please update to 1.1 as it includes Gesture handling.
@@ -190,3 +193,6 @@ Please update to 3.0.2 as it includes bug fixes.
 
 = 3.0.3 =
 Please update to 3.0.3 as it includes bug fixes.
+
+= 3.1.0 =
+Please update to 3.1.0 as it includes bug fixes.

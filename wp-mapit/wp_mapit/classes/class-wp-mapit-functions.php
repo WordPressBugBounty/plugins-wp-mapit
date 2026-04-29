@@ -5,6 +5,8 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
 /**
  * Exit if accessed directly
  */
@@ -14,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'Wp_Mapit_Functions' ) ) {
 	/**
-	 * CLass to manage common functions of the plugin
+	 * Class to manage common functions of the plugin
 	 */
 	class Wp_Mapit_Functions {
 		/**

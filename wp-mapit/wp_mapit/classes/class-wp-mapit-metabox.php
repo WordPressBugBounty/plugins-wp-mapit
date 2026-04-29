@@ -5,6 +5,11 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
+use WpMapit\Classes\Wp_Mapit_Create_Metabox;
+use WpMapit\Classes\Wp_Mapit_Admin_Settings;
+
 /**
  * Exit if accessed directly
  */
@@ -43,10 +48,10 @@ if ( ! class_exists( 'Wp_Mapit_Metabox' ) ) {
 		 * @access public
 		 */
 		public static function init_hook() {
-			$arr_allowed_post_types = wp_mapit_admin_settings::get_allowed_posttypes();
+			$arr_allowed_post_types = Wp_Mapit_Admin_Settings::get_allowed_posttypes();
 
 			$arr_map_types = array();
-			$_map_types    = wp_mapit_admin_settings::get_map_types();
+			$_map_types    = Wp_Mapit_Admin_Settings::get_map_types();
 			array_walk(
 				$_map_types,
 				function ( $label, $value ) use ( &$arr_map_types ) {
@@ -59,7 +64,7 @@ if ( ! class_exists( 'Wp_Mapit_Metabox' ) ) {
 
 			if ( is_array( $arr_allowed_post_types ) && count( $arr_allowed_post_types ) > 0 ) {
 				$arr_map_position = array();
-				$_map_positions   = wp_mapit_admin_settings::get_map_positions();
+				$_map_positions   = Wp_Mapit_Admin_Settings::get_map_positions();
 				array_walk(
 					$_map_positions,
 					function ( $label, $value ) use ( &$arr_map_position ) {
@@ -291,9 +296,4 @@ if ( ! class_exists( 'Wp_Mapit_Metabox' ) ) {
 			new wp_mapit_create_metabox( 'wp-mapit-metabox-pins', __( 'WP MapIt Map Pins', 'wp-mapit' ), $arr_map_multi_metabox_pin_fields, 'wp_mapit_map', true );
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_Metabox::init();
 }

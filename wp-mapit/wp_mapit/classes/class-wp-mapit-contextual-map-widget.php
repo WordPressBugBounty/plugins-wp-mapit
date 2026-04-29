@@ -5,6 +5,8 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
 /**
  * Exit if accessed directly
  */
@@ -16,7 +18,7 @@ if ( ! class_exists( 'Wp_Mapit_Contextual_Map_Widget' ) ) {
 	/**
 	 * Class to create a widget to display the map from the current page, post or custom post type
 	 */
-	class Wp_Mapit_Contextual_Map_Widget extends WP_Widget {
+	class Wp_Mapit_Contextual_Map_Widget extends \WP_Widget {
 		/**
 		 * Constructor of the class, called when the object is initiated.
 		 *

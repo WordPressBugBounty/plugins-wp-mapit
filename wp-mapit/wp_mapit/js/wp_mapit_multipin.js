@@ -2,7 +2,6 @@ jQuery( window ).on( 'load', function(){
 	if( jQuery( '.wp_mapit_multipin_map' ).length > 0 ) {
 		jQuery( '.wp_mapit_multipin_map' ).each( function() {
 			var _this = jQuery(this);
-
 			var _id = _this.attr( 'id' );
 			var _lat = _this.data( 'lat' );
 			var _lng = _this.data( 'lng' );
@@ -40,7 +39,6 @@ jQuery( window ).on( 'load', function(){
 			}).addTo(wp_mapit_multipin_map);
 
 			if( _pins.length > 0 ) {
-
 				_pins.forEach( function( _pin ) {
 
 					var _img = new Image();

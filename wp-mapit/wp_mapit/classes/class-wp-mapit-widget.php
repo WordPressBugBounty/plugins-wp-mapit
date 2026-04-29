@@ -5,6 +5,10 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
+use WpMapit\Classes\Wp_Mapit_Contextual_Map_Widget;
+
 /**
  * Exit if accessed directly
  */
@@ -26,7 +30,15 @@ if ( ! class_exists( 'Wp_Mapit_Widget' ) ) {
 		 * @access public
 		 */
 		public static function init() {
-			add_action( 'widgets_init', __CLASS__ . '::widgets_init' );
+			require_once ABSPATH . 'wp-includes/class-wp-widget.php';
+
+			add_action(
+				'widgets_init',
+				array(
+					__CLASS__,
+					'widgets_init',
+				),
+			);
 		}
 
 		/**
@@ -37,12 +49,7 @@ if ( ! class_exists( 'Wp_Mapit_Widget' ) ) {
 		 * @access public
 		 */
 		public static function widgets_init() {
-			register_widget( 'wp_mapit_contextual_map_widget' );
+			register_widget( Wp_Mapit_Contextual_Map_Widget::class );
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_Widget::init();
 }

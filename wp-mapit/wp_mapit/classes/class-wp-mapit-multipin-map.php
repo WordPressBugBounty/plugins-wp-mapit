@@ -5,6 +5,11 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
+use WpMapit\Classes\Wp_Mapit_Functions;
+use WpMapit\Classes\Wp_Mapit_Admin_Settings;
+
 /**
  * Exit if accessed directly
  */
@@ -68,7 +73,7 @@ if ( ! class_exists( 'Wp_Mapit_Multipin_Map' ) ) {
 		public static function get_map_type( $post_id ) {
 			$map_type = trim( get_post_meta( $post_id, 'wpmi_multipin_map_type', true ) );
 
-			return ( ( '' !== $map_type ) ? $map_type : wp_mapit_admin_settings::get_map_type() );
+			return ( ( '' !== $map_type ) ? $map_type : Wp_Mapit_Admin_Settings::get_map_type() );
 		}
 
 		/**
@@ -83,7 +88,7 @@ if ( ! class_exists( 'Wp_Mapit_Multipin_Map' ) ) {
 		public static function get_map_marker( $post_id ) {
 			$map_marker = trim( get_post_meta( $post_id, 'wpmi_multipin_map_marker_image', true ) );
 
-			return ( ( '' !== $map_marker ) ? $map_marker : wp_mapit_admin_settings::get_map_marker() );
+			return ( ( '' !== $map_marker ) ? $map_marker : Wp_Mapit_Admin_Settings::get_map_marker() );
 		}
 
 		/**
@@ -95,7 +100,7 @@ if ( ! class_exists( 'Wp_Mapit_Multipin_Map' ) ) {
 		 * @return int Returns the width of the map
 		 */
 		public static function get_map_width() {
-			$width = trim( wp_mapit_admin_settings::get_map_width() );
+			$width = trim( Wp_Mapit_Admin_Settings::get_map_width() );
 			return ( ( '' !== $width && intval( $width ) > 0 ) ? $width : 300 );
 		}
 
@@ -108,7 +113,7 @@ if ( ! class_exists( 'Wp_Mapit_Multipin_Map' ) ) {
 		 * @return string Returns the width type of the map
 		 */
 		public static function get_map_width_type() {
-			$width_type = trim( wp_mapit_admin_settings::get_map_width_type() );
+			$width_type = trim( Wp_Mapit_Admin_Settings::get_map_width_type() );
 			return ( ( in_array( $width_type, array( 'px', 'per' ), true ) ? $width_type : 'per' ) );
 		}
 
@@ -121,7 +126,7 @@ if ( ! class_exists( 'Wp_Mapit_Multipin_Map' ) ) {
 		 * @return int Returns the height of the map
 		 */
 		public static function get_map_height() {
-			$height = trim( wp_mapit_admin_settings::get_map_height() );
+			$height = trim( Wp_Mapit_Admin_Settings::get_map_height() );
 			return ( ( '' !== $height && intval( $height ) > 0 ) ? $height : 300 );
 		}
 
@@ -134,7 +139,7 @@ if ( ! class_exists( 'Wp_Mapit_Multipin_Map' ) ) {
 		 * @return string Returns the height type of the map
 		 */
 		public static function get_map_height_type() {
-			$height_type = trim( wp_mapit_admin_settings::get_map_height_type() );
+			$height_type = trim( Wp_Mapit_Admin_Settings::get_map_height_type() );
 			return ( ( in_array( $height_type, array( 'px', 'per' ), true ) ? $height_type : 'px' ) );
 		}
 

@@ -5,6 +5,8 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
 /**
  * Exit if accessed directly
  */
@@ -31,15 +33,6 @@ if ( ! class_exists( 'Wp_Mapit_Post_Type' ) ) {
 				array(
 					__CLASS__,
 					'init_hook',
-				)
-			);
-
-			/* Add admin menu */
-			add_action(
-				'admin_menu',
-				array(
-					__CLASS__,
-					'admin_menu',
 				)
 			);
 
@@ -90,29 +83,13 @@ if ( ! class_exists( 'Wp_Mapit_Post_Type' ) ) {
 				'public'              => true,
 				'has_archive'         => false,
 				'exclude_from_search' => true,
-				'publicly_queryable'  => false,
+				'show_in_rest'        => true,
+				'publicly_queryable'  => true,
 				'supports'            => array( 'title' ),
 				'show_in_menu'        => false,
 			);
 
 			register_post_type( 'wp_mapit_map', $maps ); /* phpcs:ignore */
-		}
-
-		/**
-		 * Hook to manage WP MapIt admin menu
-		 *
-		 * @since 1.0
-		 * @static
-		 * @access public
-		 */
-		public static function admin_menu() {
-			add_submenu_page(
-				'wp_mapit',
-				__( 'Multipin Map', 'wp-mapit' ),
-				__( 'Multipin Map', 'wp-mapit' ),
-				'manage_options',
-				'edit.php?post_type=wp_mapit_map'
-			);
 		}
 
 		/**
@@ -147,9 +124,4 @@ if ( ! class_exists( 'Wp_Mapit_Post_Type' ) ) {
 			}
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_Post_Type::init();
 }

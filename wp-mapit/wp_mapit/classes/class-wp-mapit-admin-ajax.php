@@ -5,6 +5,8 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
 /**
  * Exit if accessed directly
  */
@@ -25,7 +27,15 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Ajax' ) ) {
 		 * @access public
 		 */
 		public static function init() {
-			add_action( 'wp_ajax_wp_mapit_location_search', __CLASS__ . '::wp_mapit_location_search' );
+
+			/* For search location */
+			add_action(
+				'wp_ajax_wp_mapit_location_search',
+				array(
+					__CLASS__,
+					'wp_mapit_location_search',
+				),
+			);
 		}
 
 		/**
@@ -36,6 +46,18 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Ajax' ) ) {
 		 * @access public
 		 */
 		public static function wp_mapit_location_search() {
+
+			// Capability check.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				echo wp_json_encode(
+					array(
+						'status'  => '0',
+						'message' => __( 'Unauthorized', 'wp-mapit' ),
+					)
+				);
+				die();
+			}
+
 			$status  = '0';
 			$message = '';
 			$data    = array();
@@ -70,12 +92,7 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Ajax' ) ) {
 					'data'    => $data,
 				)
 			);
-			die;
+			die();
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_Admin_Ajax::init();
 }

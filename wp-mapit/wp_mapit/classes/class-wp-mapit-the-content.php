@@ -5,6 +5,10 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
+use WpMapit\Classes\Wp_Mapit_Map;
+
 /**
  * Exit if accessed directly
  */
@@ -24,7 +28,13 @@ if ( ! class_exists( 'Wp_Mapit_The_Content' ) ) {
 		 * @access public
 		 */
 		public static function init() {
-			add_filter( 'the_content', __CLASS__ . '::the_content' );
+			add_filter(
+				'the_content',
+				array(
+					__CLASS__,
+					'the_content',
+				),
+			);
 		}
 
 		/**
@@ -52,9 +62,4 @@ if ( ! class_exists( 'Wp_Mapit_The_Content' ) ) {
 			return $content;
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_The_Content::init();
 }

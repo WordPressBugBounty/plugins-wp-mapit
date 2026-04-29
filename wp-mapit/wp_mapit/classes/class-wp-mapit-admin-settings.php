@@ -5,6 +5,8 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
 /**
  * Exit if accessed directly
  */
@@ -91,15 +93,6 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 					'admin_init',
 				)
 			);
-
-			/* Change menu order */
-			add_filter(
-				'custom_menu_order',
-				array(
-					__CLASS__,
-					'custom_menu_order',
-				)
-			);
 		}
 
 		/**
@@ -124,6 +117,14 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 
 			add_submenu_page(
 				'wp_mapit',
+				__( 'Multipin Map', 'wp-mapit' ),
+				__( 'Multipin Map', 'wp-mapit' ),
+				'manage_options',
+				'edit.php?post_type=wp_mapit_map'
+			);
+
+			add_submenu_page(
+				'wp_mapit',
 				__( 'Settings', 'wp-mapit' ),
 				__( 'Settings', 'wp-mapit' ),
 				'manage_options',
@@ -133,28 +134,9 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 					'wp_mapit_settings',
 				)
 			);
-		}
 
-		/**
-		 * Hook to manage WP MapIt custom menu order.
-		 *
-		 * @since 1.0
-		 * @static
-		 * @access public
-		 *
-		 * @param Array $menu_ord Menu order as array.
-		 * @return Array Menu order as array.
-		 */
-		public static function custom_menu_order( $menu_ord ) {
-
-			global $submenu;
-
-			if ( isset( $submenu['wp_mapit'] ) && isset( $submenu['wp_mapit'][0] ) ) {
-				$submenu['wp_mapit'][99] = $submenu['wp_mapit'][0]; /* phpcs:ignore */
-				unset( $submenu['wp_mapit'][0] );
-			}
-
-			return $menu_ord;
+			// Remove default submenu of WP MapIt menu.
+			remove_submenu_page( 'wp_mapit', 'wp_mapit' );
 		}
 
 		/**
@@ -165,6 +147,11 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 		 * @access public
 		 */
 		public static function wp_mapit_settings() {
+
+			// Capability check.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( __( 'Unauthorized', 'wp-mapit' ) );
+			}
 			?>
 				<div class="wrap">
 					<div id="wp-mapit-settings-container">
@@ -174,7 +161,7 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 								<li><a href="https://www.paypal.me/chandnipatel11" target="_blank"><?php esc_html_e( 'Donate', 'wp-mapit' ); ?></a></li>
 							</ul>
 						</div>
-						
+
 						<?php
 						if ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'settings_submit' ) && isset( $_REQUEST['info'] ) && 's' === sanitize_text_field( wp_unslash( $_REQUEST['info'] ) ) ) {
 							?>
@@ -192,7 +179,7 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 									<?php
 										wp_nonce_field( 'wp_mapit_settings', 'wp_mapit_settings_nonce' );
 									?>
-									
+
 									<div class="wp-mapit-row">
 										<label><?php esc_html_e( 'Map Settings', 'wp-mapit' ); ?></label>
 										<div class="wp-mapit-row">
@@ -225,7 +212,7 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 											<p class="description"><?php esc_html_e( 'Default zoom for the map.', 'wp-mapit' ); ?></p>
 										</div>
 									</div>
-									
+
 									<div class="wp-mapit-row">
 										<label><?php esc_html_e( 'General Settings', 'wp-mapit' ); ?></label>
 										<div class="wp-mapit-row">
@@ -286,7 +273,7 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 												)
 											);
 
-											$arr_exclude_post_types = apply_filters( 'wp_mapitesc_html_exclude_post_types', array( 'wp_mapit_map', 'attachment' ) );
+											$arr_exclude_post_types = apply_filters( 'wpmapit_exclude_post_types', array( 'wp_mapit_map', 'attachment' ) );
 
 											if ( is_array( $arr_post_types ) && count( $arr_post_types ) > 0 ) {
 												?>
@@ -355,6 +342,7 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 		 * @access public
 		 */
 		public static function admin_init() {
+
 			if ( isset( $_POST['wp_mapit_settings_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wp_mapit_settings_nonce'] ) ), 'wp_mapit_settings' ) ) {
 				update_option( 'wpmi_map_type', ( isset( $_POST['wpmi_map_type'] ) ? sanitize_text_field( wp_unslash( $_POST['wpmi_map_type'] ) ) : '' ) );
 				update_option( 'wpmi_latitude', ( isset( $_POST['wpmi_latitude'] ) ? sanitize_text_field( wp_unslash( $_POST['wpmi_latitude'] ) ) : '' ) );
@@ -530,10 +518,4 @@ if ( ! class_exists( 'Wp_Mapit_Admin_Settings' ) ) {
 			return get_option( 'wpmi_map_position', 'before' );
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_Admin_Settings::init();
-
 }

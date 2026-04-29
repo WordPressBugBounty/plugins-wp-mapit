@@ -5,6 +5,10 @@
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
+use WpMapit\Classes\Wp_Mapit_Admin_Settings;
+
 /**
  * Exit if accessed directly
  */
@@ -84,41 +88,6 @@ if ( ! class_exists( 'Wp_Mapit_Create_Metabox' ) ) {
 					'save_post',
 				)
 			);
-		}
-
-		/**
-		 * Sanitize array.
-		 *
-		 * @since 1.0
-		 * @access public
-		 * @param Array $_array Array data to be sanitized.
-		 * @return Array $_array Array data after sanitization.
-		 */
-		private function sanitize_array( $_array ) {
-			$_array = array_map(
-				function ( $_val ) {
-					$_keys = array_keys( $_val );
-					return array_combine(
-						$_keys,
-						array_map(
-							function ( $_v, $_f ) {
-								if ( 'marker_content' === $_f ) {
-									$_v = wp_kses_post( $_v );
-								} else {
-									$_v = sanitize_text_field( $_v );
-								}
-
-								return $_v;
-							},
-							$_val,
-							$_keys
-						)
-					);
-				},
-				$_array
-			);
-
-			return $_array;
 		}
 
 		/**
@@ -416,11 +385,11 @@ if ( ! class_exists( 'Wp_Mapit_Create_Metabox' ) ) {
 					<?php
 					break;
 				case 'map':
-					$default_map_type = wp_mapit_admin_settings::get_map_type();
-					$default_zoom     = wp_mapit_admin_settings::get_map_zoom();
-					$default_lat      = wp_mapit_admin_settings::get_map_latitude();
-					$default_lng      = wp_mapit_admin_settings::get_map_longitude();
-					$default_marker   = wp_mapit_admin_settings::get_map_marker();
+					$default_map_type = Wp_Mapit_Admin_Settings::get_map_type();
+					$default_zoom     = Wp_Mapit_Admin_Settings::get_map_zoom();
+					$default_lat      = Wp_Mapit_Admin_Settings::get_map_latitude();
+					$default_lng      = Wp_Mapit_Admin_Settings::get_map_longitude();
+					$default_marker   = Wp_Mapit_Admin_Settings::get_map_marker();
 					?>
 						<div id="<?php echo esc_attr( $id ); ?>" data-maptype="<?php echo esc_attr( $default_map_type ); ?>" data-zoom="<?php echo esc_attr( $default_zoom ); ?>" data-latitude="<?php echo esc_attr( $default_lat ); ?>" data-longitude="<?php echo esc_attr( $default_lng ); ?>" data-marker="<?php echo esc_url( $default_marker ); ?>"></div>
 					<?php
@@ -434,7 +403,7 @@ if ( ! class_exists( 'Wp_Mapit_Create_Metabox' ) ) {
 					<?php
 					break;
 				default:
-					do_action( 'wp_mapit_custom_field_' . $type, $post_id, $field, $value );
+					do_action( 'wpmapit_custom_field_' . $type, $post_id, $field, $value );
 			}
 
 			if ( null !== $desc ) {
@@ -450,7 +419,13 @@ if ( ! class_exists( 'Wp_Mapit_Create_Metabox' ) ) {
 		 * @param Int $post_id Id of the post.
 		 */
 		public function save_post( $post_id ) {
+
 			$post_type = get_post_type();
+
+			/* check permissions */
+			if ( ! current_user_can( 'edit_page', $post_id ) ) {
+				return $post_id;
+			}
 
 			/* verify nonce */
 			if ( ! isset( $_POST['wp_mapit_metabox_nonce'] ) ) {
@@ -465,15 +440,11 @@ if ( ! class_exists( 'Wp_Mapit_Create_Metabox' ) ) {
 			if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 				return $post_id;
 			}
-			/* check permissions */
-			if ( ! current_user_can( 'edit_page', $post_id ) ) {
-				return $post_id;
-			}
 
 			if ( is_array( $this->fields ) && count( $this->fields ) > 0 && in_array( $post_type, $this->post_types, true ) ) {
 				foreach ( $this->fields as $field ) {
 
-					if ( ! in_array( $field['type'], apply_filters( 'wp_mapit_exclude_save_fields', array( 'map', 'map_search' ) ), true ) ) {
+					if ( ! in_array( $field['type'], apply_filters( 'wpmapit_exclude_save_fields', array( 'map', 'map_search' ) ), true ) ) {
 						if ( 'section' === $field['type'] ) {
 							if ( isset( $field['fields'] ) && is_array( $field['fields'] ) && count( $field['fields'] ) > 0 ) {
 								foreach ( $field['fields'] as $section_field ) {
@@ -486,7 +457,27 @@ if ( ! class_exists( 'Wp_Mapit_Create_Metabox' ) ) {
 								}
 							}
 						} elseif ( 'mappins' === $field['type'] ) {
-							update_post_meta( $post_id, $field['id'], ( ( isset( $_POST[ $field['id'] ] ) && is_array( $_POST[ $field['id'] ] ) ) ? $this->sanitize_array( wp_unslash( $_POST[ $field['id'] ] ) ) : array() ) );
+							// For sanitize multi dimensional array of multipins.
+							$post_data = filter_input( INPUT_POST, $field['id'], FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+							$value     = array();
+
+							if ( ! empty( $post_data ) && is_array( $post_data ) ) {
+								$raw_items = wp_unslash( $post_data );
+								foreach ( $raw_items as $item ) {
+									$value[] = array(
+										'lat'            => isset( $item['lat'] ) ? (float) wp_unslash( $item['lat'] ) : 0,
+										'lng'            => isset( $item['lng'] ) ? (float) wp_unslash( $item['lng'] ) : 0,
+										'marker_image'   => isset( $item['marker_image'] ) ? esc_url_raw( wp_unslash( $item['marker_image'] ) ) : '',
+										'marker_title'   => isset( $item['marker_title'] ) ? sanitize_text_field( wp_unslash( $item['marker_title'] ) ) : '',
+										'marker_content' => isset( $item['marker_content'] ) ? wp_kses_post( wp_unslash( $item['marker_content'] ) ) : '',
+										'marker_url'     => isset( $item['marker_url'] ) ? esc_url_raw( wp_unslash( $item['marker_url'] ) ) : '',
+									);
+
+								}
+							}
+
+							update_post_meta( $post_id, $field['id'], $value );
+
 						} else {
 							$sanitize = ( isset( $field['sanitize'] ) ? $field['sanitize'] : '' );
 							if ( 'sanitize_textarea' === $sanitize ) {
@@ -498,7 +489,7 @@ if ( ! class_exists( 'Wp_Mapit_Create_Metabox' ) ) {
 					}
 				}
 
-				do_action( 'wp_mapit_after_save', $post_id );
+				do_action( 'wpmapit_after_save', $post_id );
 			}
 		}
 	}

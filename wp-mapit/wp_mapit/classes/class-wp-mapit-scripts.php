@@ -1,10 +1,15 @@
 <?php
 /**
- * Exit if accessed directly
+ * Manage the scripts and styles
  *
  * @package wp-mapit
  */
 
+namespace WpMapit\Classes;
+
+/**
+ * Exit if accessed directly
+ */
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access Denied' );
 }
@@ -148,9 +153,4 @@ if ( ! class_exists( 'Wp_Mapit_Scripts' ) ) {
 			}
 		}
 	}
-
-	/**
-	 * Calling init function to activate hooks and filters.
-	 */
-	Wp_Mapit_Scripts::init();
 }

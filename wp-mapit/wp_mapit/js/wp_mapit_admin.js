@@ -141,11 +141,6 @@ function wp_mapit_set_marker(_lat, _lng) {
 
 			wp_mapit_map_marker.on( 'moveend', function() {
 				_center = wp_mapit_map_marker.getLatLng();
-				
-				/*_lat = _center.lat;
-				_lng = _center.lng;*/
-
-				/*wp_mapit_set_marker( _lat, _lng );*/
 
 				jQuery( '#wpmi_map_latitiude' ).val( _center.lat );
 				jQuery( '#wpmi_map_longitude' ).val( _center.lng );
