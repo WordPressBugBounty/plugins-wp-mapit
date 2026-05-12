@@ -7,11 +7,6 @@
 
 declare( strict_types = 1 );
 
-namespace WpMapit\Classes;
-
-use WP_REST_Request;
-use WpMapit\Classes\Wp_Mapit_Multipin_Map;
-
 /**
  * Exit if accessed directly
  */
@@ -106,11 +101,12 @@ if ( ! class_exists( 'Wp_Mapit_Blocks' ) ) {
 		 */
 		public static function render_wp_mapit( $attributes ) {
 			ob_start();
-			$map_id = isset( $attributes['wp_mapit_map'] ) ? $attributes['wp_mapit_map'] : '';
+			$map_id = $attributes['wp_mapit_map'] ?? '';
+			$align  = $attributes['align'] ?? '';
 
 			if ( '' !== $map_id ) {
 				?>
-				<div class="wp-mapit-block">
+				<div class="wp-mapit-block <?php echo esc_attr( '' !== $align ? ' align' . $align : '' ); ?>">
 					<?php
 					if ( Wp_Mapit_Multipin_Map::has_map( $map_id ) ) {
 						echo wp_kses_post( Wp_Mapit_Multipin_Map::generate_map( $map_id ) );
@@ -124,4 +120,9 @@ if ( ! class_exists( 'Wp_Mapit_Blocks' ) ) {
 			return $content;
 		}
 	}
+
+	/**
+	 * Calling init function to activate hooks and filters.
+	 */
+	Wp_Mapit_Blocks::init();
 }
